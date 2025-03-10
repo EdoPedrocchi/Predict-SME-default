@@ -1,27 +1,27 @@
-import streamlit as st
 import joblib
 import pandas as pd
-import numpy as np
+import streamlit as st
 
-# Carica il modello salvato
-model = joblib.load('random_forest_model.pkl')
+# Carica il modello
+try:
+    model = joblib.load('random_forest_model.pkl')
+    st.write("Modello caricato correttamente!")
+except FileNotFoundError:
+    st.write("Errore: il modello non è stato trovato.")
+    model = None
+except Exception as e:
+    st.write(f"Errore durante il caricamento del modello: {e}")
+    model = None
 
-# Funzione per fare predizioni
-def make_prediction(input_data):
-    prediction = model.predict(input_data)
-    return prediction
-
-# Interfaccia utente con Streamlit
-st.title("Predizione con Random Forest")
-
-# Chiedi all'utente di inserire i dati (fai attenzione ai tipi di input e alla forma dei dati)
-input_data = []
-for column in model.feature_importances_.index:
-    value = st.number_input(f"Inserisci il valore per {column}")
-    input_data.append(value)
-
-input_data = np.array(input_data).reshape(1, -1)
-
-if st.button("Predici"):
-    prediction = make_prediction(input_data)
-    st.write(f"La previsione del modello è: {prediction[0]}")
+# Verifica che il modello sia caricato correttamente e abbia l'attributo feature_importances_
+if model is not None:
+    if hasattr(model, 'feature_importances_'):
+        feature_importances = model.feature_importances_
+        feature_df = pd.DataFrame({
+            'Feature': X.columns,
+            'Importance': feature_importances
+        })
+        st.write("Importanza delle caratteristiche:")
+        st.write(feature_df.sort_values(by='Importance', ascending=False))
+    else:
+        st.write("Errore: il modello non ha l'attributo 'feature_importances_'")
