@@ -40,3 +40,10 @@ feature_importances = pd.Series(rf_model.feature_importances_, index=X.columns)
 print("Feature Importances:")
 print(feature_importances.sort_values(ascending=False))
 
+
+
+import joblib
+
+# Salva il modello addestrato
+joblib.dump(rf_model, 'random_forest_model.pkl')
+
